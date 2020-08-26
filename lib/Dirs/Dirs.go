@@ -1,4 +1,4 @@
-package main
+package Dirs
 
 import (
 	"bytes"
@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-func getFile(newFile string) string {
+func GetFile(newFile string) string {
 
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {

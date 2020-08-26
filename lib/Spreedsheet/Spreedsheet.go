@@ -1,4 +1,4 @@
-package main
+package Spreedsheet
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 	"log"
 	"strconv"
 
+	"WeeklyBinanceBuyBot_Go/lib/Dirs"
 	"golang.org/x/oauth2/google"
 	"gopkg.in/Iwark/spreadsheet.v2"
 )
@@ -14,28 +15,28 @@ func lastCellReturn() (int, int, int) {
 
 	sheet := callSheet()
 
-	lastRow, lastCollumn := len(sheet.Rows), len(sheet.Columns)
+	lastRow, lastColumn := len(sheet.Rows), len(sheet.Columns)
 	lastIndex, _ := strconv.Atoi(sheet.Rows[lastRow-1][0].Value)
-	return lastRow, lastCollumn, lastIndex
+	return lastRow, lastColumn, lastIndex
 }
 
 func callSheet() *spreadsheet.Sheet {
 
-	data, _ := ioutil.ReadFile(getFile("/client_secret.json"))
+	data, _ := ioutil.ReadFile(Dirs.GetFile("/client_secret.json"))
 
 	conf, _ := google.JWTConfigFromJSON(data, spreadsheet.Scope)
 
 	client := conf.Client(context.TODO())
 
 	service := spreadsheet.NewServiceWithClient(client)
-	spreadsheet, _ := service.FetchSpreadsheet("1U0bu2wRjlMBiX5XdGlcSZqXWh7LDwBz-k1c_8kQzWOw")
+	ss, _ := service.FetchSpreadsheet("1U0bu2wRjlMBiX5XdGlcSZqXWh7LDwBz-k1c_8kQzWOw")
 
-	sheet, _ := spreadsheet.SheetByIndex(0)
+	sheet, _ := ss.SheetByIndex(0)
 
 	return sheet
 }
 
-func editingSheet(lastOrder []string) {
+func EditingSheet(lastOrder []string) {
 
 	sheet := callSheet()
 

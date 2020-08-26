@@ -1,6 +1,7 @@
-package main
+package Binance
 
 import (
+	"WeeklyBinanceBuyBot_Go/lib/Dirs"
 	"bufio"
 	"context"
 	"fmt"
@@ -20,7 +21,7 @@ func binanceClient() *binance.Client {
 		keys [2]string
 	)
 
-	f, err := os.Open(getFile("/Secret.txt"))
+	f, err := os.Open(Dirs.GetFile("/Secret.txt"))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -44,7 +45,7 @@ func binanceClient() *binance.Client {
 	return client
 }
 
-func getUsdtBalanceToTrade() float64 {
+func GetUsdtBalanceToTrade() float64 {
 
 	client := binanceClient()
 
@@ -72,13 +73,18 @@ func getUsdtBalanceToTrade() float64 {
 	}
 
 	amountToTrade := math.Round((USDT/remainingWeeksDivider)*100) / 100
-	if amountToTrade <= 10. {
+	switch {
+	case amountToTrade <= 10.:
 		amountToTrade = 0
+	case amountToTrade >= 10. && amountToTrade <= 11.:
+		amountToTrade = float64(int(amountToTrade)) + 0.01
+	default:
+		amountToTrade = float64(int(amountToTrade))
 	}
 	return amountToTrade
 }
 
-func getLastTrade() []string {
+func GetLastTrade() []string {
 
 	client := binanceClient()
 
@@ -89,7 +95,7 @@ func getLastTrade() []string {
 	}
 
 	var (
-		lastOrder = []int{}
+		lastOrder []int
 		max       int
 		orderID   string
 		dateTime  string
@@ -98,7 +104,7 @@ func getLastTrade() []string {
 		exchRate  string
 		totalETH  string
 		totalUSDT string
-		lastTrade = []string{}
+		lastTrade []string
 	)
 
 	for _, o := range orders {
@@ -143,7 +149,7 @@ func getLastTrade() []string {
 	return lastTrade
 }
 
-func marketOrder(amountToTrade float64) {
+func MarketOrder(amountToTrade float64) {
 
 	amountToTradeI := fmt.Sprintf("%f", amountToTrade)
 
