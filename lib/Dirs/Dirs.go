@@ -1,11 +1,27 @@
 package Dirs
 
 import (
+	"WeeklyBinanceBuyBot_Go/lib/Utils"
 	"bytes"
+	"encoding/json"
 	"log"
 	"os"
 	"path/filepath"
 )
+
+type Creds struct {
+	Binance      Binance
+	SpereedSheet SpereedSheet
+}
+
+type Binance struct {
+	Key    string
+	Secret string
+}
+
+type SpereedSheet struct {
+	ID string
+}
 
 func GetFile(newFile string) string {
 
@@ -21,4 +37,21 @@ func GetFile(newFile string) string {
 
 	return result
 
+}
+
+func ReadFile(newFile string) Creds {
+
+	f, err := os.Open(GetFile(newFile))
+	Utils.Fatal(err)
+
+	defer f.Close()
+
+	Utils.Println(err)
+
+	Credis := Creds{}
+	err = json.NewDecoder(f).Decode(&Credis)
+
+	Utils.Println(err)
+
+	return Credis
 }

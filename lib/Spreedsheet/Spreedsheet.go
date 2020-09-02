@@ -1,6 +1,7 @@
 package Spreedsheet
 
 import (
+	"WeeklyBinanceBuyBot_Go/lib/Utils"
 	"context"
 	"io/ioutil"
 	"log"
@@ -11,16 +12,9 @@ import (
 	"gopkg.in/Iwark/spreadsheet.v2"
 )
 
-func lastCellReturn() (int, int, int) {
+var SSID = Dirs.ReadFile("/Config.json").SpereedSheet.ID
 
-	sheet := callSheet()
-
-	lastRow, lastColumn := len(sheet.Rows), len(sheet.Columns)
-	lastIndex, _ := strconv.Atoi(sheet.Rows[lastRow-1][0].Value)
-	return lastRow, lastColumn, lastIndex
-}
-
-func callSheet() *spreadsheet.Sheet {
+func CallSheet() *spreadsheet.Sheet {
 
 	data, _ := ioutil.ReadFile(Dirs.GetFile("/client_secret.json"))
 
@@ -29,18 +23,28 @@ func callSheet() *spreadsheet.Sheet {
 	client := conf.Client(context.TODO())
 
 	service := spreadsheet.NewServiceWithClient(client)
-	ss, _ := service.FetchSpreadsheet("1U0bu2wRjlMBiX5XdGlcSZqXWh7LDwBz-k1c_8kQzWOw")
+	ss, _ := service.FetchSpreadsheet(SSID)
 
 	sheet, _ := ss.SheetByIndex(0)
 
 	return sheet
 }
 
+func LastCellReturn() (int, int, int) {
+
+	sheet := CallSheet()
+
+	lastRow, lastColumn := len(sheet.Rows), len(sheet.Columns)
+	lastIndex, _ := strconv.Atoi(sheet.Rows[lastRow-1][0].Value)
+
+	return lastRow, lastColumn, lastIndex
+}
+
 func EditingSheet(lastOrder []string) {
 
-	sheet := callSheet()
+	sheet := CallSheet()
 
-	lr, lc, li := lastCellReturn()
+	lr, lc, li := LastCellReturn()
 
 	newLi := strconv.Itoa(li + 1)
 
@@ -59,6 +63,7 @@ func EditingSheet(lastOrder []string) {
 		log.Fatalln("No new orders was made")
 	}
 
-	sheet.Synchronize()
+	err := sheet.Synchronize()
+	Utils.Println(err)
 
 }

@@ -2,12 +2,10 @@ package Binance
 
 import (
 	"WeeklyBinanceBuyBot_Go/lib/Dirs"
-	"bufio"
+	"WeeklyBinanceBuyBot_Go/lib/Utils"
 	"context"
 	"fmt"
-	"log"
 	"math"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -15,32 +13,15 @@ import (
 	"github.com/adshao/go-binance"
 )
 
+var (
+	Config = Dirs.ReadFile("/Config.json")
+	Key    = Config.Binance.Key
+	Secret = Config.Binance.Secret
+)
+
 func binanceClient() *binance.Client {
 
-	var (
-		keys [2]string
-	)
-
-	f, err := os.Open(Dirs.GetFile("/Secret.txt"))
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer f.Close()
-
-	scanner := bufio.NewScanner(f)
-
-	for n := 0; scanner.Scan(); n++ {
-		text := strings.SplitAfter(scanner.Text(), " = ")
-		keys[n] = text[1]
-
-	}
-
-	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
-	}
-
-	client := binance.NewClient(keys[0], keys[1])
+	client := binance.NewClient(Key, Secret)
 
 	return client
 }
@@ -50,9 +31,7 @@ func GetUsdtBalanceToTrade() float64 {
 	client := binanceClient()
 
 	res, err := client.NewGetAccountService().Do(context.Background())
-	if err != nil {
-		fmt.Println(err)
-	}
+	Utils.Println(err)
 
 	var (
 		USDT                  float64
@@ -90,9 +69,7 @@ func GetLastTrade() []string {
 
 	orders, err := client.NewListOrdersService().Symbol("ETHUSDT").
 		Do(context.Background())
-	if err != nil {
-		fmt.Println(err)
-	}
+	Utils.Println(err)
 
 	var (
 		lastOrder []int
@@ -134,9 +111,7 @@ func GetLastTrade() []string {
 	}
 
 	res, err := client.NewGetAccountService().Do(context.Background())
-	if err != nil {
-		fmt.Println(err)
-	}
+	Utils.Println(err)
 
 	for _, asset := range res.Balances {
 		if asset.Asset == "USDT" {
@@ -149,7 +124,7 @@ func GetLastTrade() []string {
 	return lastTrade
 }
 
-func MarketOrder(amountToTrade float64) {
+func MarketOrder(amountToTrade float64) error {
 
 	amountToTradeI := fmt.Sprintf("%f", amountToTrade)
 
@@ -157,7 +132,6 @@ func MarketOrder(amountToTrade float64) {
 
 	_, err := client.NewCreateOrderService().Symbol("ETHUSDT").
 		Side(binance.SideTypeBuy).Type(binance.OrderTypeMarket).QuoteOrderQty(amountToTradeI).Do(context.Background())
-	if err != nil {
-		log.Fatal(err)
-	}
+
+	return err
 }
