@@ -56,8 +56,6 @@ func Send(SendMethod string, reqBody *sendMessageReqBody) {
 		log.Fatalln(err)
 	}
 
-	log.Println(reqBody, reqBytes)
-
 	res, err := http.Post(URLTelegram+SendMethod, "application/json", bytes.NewBuffer(reqBytes))
 	if err != nil {
 		log.Fatalln(err)
