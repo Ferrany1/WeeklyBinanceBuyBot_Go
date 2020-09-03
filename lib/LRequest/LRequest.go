@@ -60,7 +60,7 @@ func HandleApiRequest(body *Telegram.WebhookReqBody) {
 				BlastPrice             = Binance.LastPrice()
 				ETH, USDT, RateETHUSDT = Spreedsheet.GetAveragePriceHistory()
 				PL                     = ETH*BlastPrice - USDT
-				PLProcent              = 1 - RateETHUSDT/BlastPrice
+				PLProcent              = (1 - RateETHUSDT/BlastPrice) * 100
 				Text                   = fmt.Sprintf(
 					"Total:\nETH: %0.6f\nUSDT: %0.2f$\nBuy Rate: %0.2f$\nCurrent Rate: %0.2f$\n\nP/L: %0.2f$ (%0.2f%%)",
 					ETH, USDT, RateETHUSDT, BlastPrice, PL, PLProcent,
