@@ -12,6 +12,7 @@ import (
 type Creds struct {
 	Binance      Binance
 	SpereedSheet SpereedSheet
+	Telegram     Telegram
 }
 
 type Binance struct {
@@ -21,6 +22,11 @@ type Binance struct {
 
 type SpereedSheet struct {
 	ID string
+}
+
+type Telegram struct {
+	API    string
+	ChatID int64
 }
 
 func GetFile(newFile string) string {

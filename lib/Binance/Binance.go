@@ -4,8 +4,10 @@ import (
 	"WeeklyBinanceBuyBot_Go/lib/Dirs"
 	"WeeklyBinanceBuyBot_Go/lib/Utils"
 	"context"
+	"encoding/json"
 	"fmt"
 	"math"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -18,6 +20,11 @@ var (
 	Key    = Config.Binance.Key
 	Secret = Config.Binance.Secret
 )
+
+type CurrentPrice struct {
+	Symbol string `json:"symbol"`
+	Price  string `json:"price"`
+}
 
 func binanceClient() *binance.Client {
 
@@ -134,4 +141,22 @@ func MarketOrder(amountToTrade float64) error {
 		Side(binance.SideTypeBuy).Type(binance.OrderTypeMarket).QuoteOrderQty(amountToTradeI).Do(context.Background())
 
 	return err
+}
+
+func LastPrice() float64 {
+	var (
+		symbol = "ETHUSDT"
+		url    = fmt.Sprintf("https://api.binance.com/api/v3/ticker/price?symbol=%s", symbol)
+	)
+
+	resp, err := http.Get(url)
+	Utils.Println(err)
+
+	var CP CurrentPrice
+	json.NewDecoder(resp.Body).Decode(&CP)
+
+	price, err := strconv.ParseFloat(CP.Price, 64)
+	Utils.Println(err)
+
+	return price
 }

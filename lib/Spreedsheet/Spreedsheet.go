@@ -1,15 +1,15 @@
 package Spreedsheet
 
 import (
+	"WeeklyBinanceBuyBot_Go/lib/Dirs"
 	"WeeklyBinanceBuyBot_Go/lib/Utils"
 	"context"
+	"golang.org/x/oauth2/google"
+	"gopkg.in/Iwark/spreadsheet.v2"
 	"io/ioutil"
 	"log"
 	"strconv"
-
-	"WeeklyBinanceBuyBot_Go/lib/Dirs"
-	"golang.org/x/oauth2/google"
-	"gopkg.in/Iwark/spreadsheet.v2"
+	"strings"
 )
 
 var SSID = Dirs.ReadFile("/Config.json").SpereedSheet.ID
@@ -66,4 +66,35 @@ func EditingSheet(lastOrder []string) {
 	err := sheet.Synchronize()
 	Utils.Println(err)
 
+}
+
+func GetAveragePriceHistory() (float64, float64, float64) {
+	sheet := CallSheet()
+	var (
+		ETH         float64
+		USDT        float64
+		RateETHUSDT float64
+		lastRow     = len(sheet.Rows)
+		SheetData   = sheet.Data.GridData[0]
+	)
+
+	for i := 1; i < lastRow; i++ {
+
+		AddETH, err := strconv.ParseFloat(
+			strings.Replace(SheetData.RowData[i].Values[3].FormattedValue, ",", ".", 1),
+			64)
+		Utils.Println(err)
+		AddUSDT, err := strconv.ParseFloat(
+			strings.Replace(SheetData.RowData[i].Values[4].FormattedValue, ",", ".", 1),
+			64)
+		Utils.Println(err)
+		ETH += AddETH
+		USDT += AddUSDT
+	}
+
+	RateETHUSDT = Utils.Round(USDT/ETH, 2)
+	ETH = Utils.Round(ETH, 6)
+	USDT = Utils.Round(USDT, 2)
+
+	return ETH, USDT, RateETHUSDT
 }
