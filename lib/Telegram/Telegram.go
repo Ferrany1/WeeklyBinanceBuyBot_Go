@@ -2,6 +2,7 @@ package Telegram
 
 import (
 	"WeeklyBinanceBuyBot_Go/lib/Dirs"
+	"WeeklyBinanceBuyBot_Go/lib/Utils"
 	"bytes"
 	"encoding/json"
 	"errors"
@@ -64,5 +65,22 @@ func Send(SendMethod string, reqBody *sendMessageReqBody) {
 
 	if res.StatusCode != http.StatusOK {
 		log.Fatalln(errors.New("unexpected status" + res.Status))
+	}
+}
+
+func DeleteCommand(b *WebhookReqBody) {
+	reqBody := &sendMessageReqBody{
+		ChatID:    b.Message.Chat.ID,
+		MessageID: b.Message.MessageID,
+	}
+
+	reqBytes, err := json.Marshal(reqBody)
+	Utils.Fatal(err)
+
+	res, err := http.Post(URLTelegram+"deleteMessage", "application/json", bytes.NewBuffer(reqBytes))
+	Utils.Fatal(err)
+
+	if res.StatusCode != http.StatusOK {
+		Utils.Fatal(errors.New("unexpected status" + res.Status))
 	}
 }

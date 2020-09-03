@@ -66,7 +66,7 @@ func HandleApiRequest(body *Telegram.WebhookReqBody) {
 					ETH, USDT, RateETHUSDT, BlastPrice, PL, PLProcent,
 				)
 			)
-
+			Telegram.DeleteCommand(body)
 			Telegram.SendMessage(body, Text)
 
 		default:
