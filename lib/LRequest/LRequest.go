@@ -68,11 +68,13 @@ func HandleApiRequest(body *Telegram.WebhookReqBody) {
 			)
 			Telegram.DeleteCommand(body)
 			Telegram.SendMessage(body, Text)
+			log.Println("Telegram message sent")
 
 		default:
 			var Text = "Wrong command, only /profit available"
 
 			Telegram.SendMessage(body, Text)
+			log.Println("Telegram error sent")
 		}
 	default:
 		log.Println(body)
