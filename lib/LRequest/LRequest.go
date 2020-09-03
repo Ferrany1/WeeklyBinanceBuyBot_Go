@@ -74,5 +74,7 @@ func HandleApiRequest(body *Telegram.WebhookReqBody) {
 
 			Telegram.SendMessage(body, Text)
 		}
+	default:
+		log.Println(body)
 	}
 }

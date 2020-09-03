@@ -30,7 +30,6 @@ type Telegram struct {
 }
 
 func GetFile(newFile string) string {
-
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
 		log.Fatal(err)
@@ -42,15 +41,16 @@ func GetFile(newFile string) string {
 	result := buf.String()
 
 	return result
-
 }
 
 func ReadFile(newFile string) Creds {
-
 	f, err := os.Open(GetFile(newFile))
 	Utils.Fatal(err)
 
-	defer f.Close()
+	defer func() {
+		err := f.Close()
+		Utils.Fatal(err)
+	}()
 
 	Utils.Println(err)
 

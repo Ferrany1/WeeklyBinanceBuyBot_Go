@@ -27,14 +27,12 @@ type CurrentPrice struct {
 }
 
 func binanceClient() *binance.Client {
-
 	client := binance.NewClient(Key, Secret)
 
 	return client
 }
 
 func GetUsdtBalanceToTrade() float64 {
-
 	client := binanceClient()
 
 	res, err := client.NewGetAccountService().Do(context.Background())
@@ -71,7 +69,6 @@ func GetUsdtBalanceToTrade() float64 {
 }
 
 func GetLastTrade() []string {
-
 	client := binanceClient()
 
 	orders, err := client.NewListOrdersService().Symbol("ETHUSDT").
@@ -132,7 +129,6 @@ func GetLastTrade() []string {
 }
 
 func MarketOrder(amountToTrade float64) error {
-
 	amountToTradeI := fmt.Sprintf("%f", amountToTrade)
 
 	client := binanceClient()
@@ -153,7 +149,8 @@ func LastPrice() float64 {
 	Utils.Println(err)
 
 	var CP CurrentPrice
-	json.NewDecoder(resp.Body).Decode(&CP)
+	err = json.NewDecoder(resp.Body).Decode(&CP)
+	Utils.Println(err)
 
 	price, err := strconv.ParseFloat(CP.Price, 64)
 	Utils.Println(err)

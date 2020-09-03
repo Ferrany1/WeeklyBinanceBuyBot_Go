@@ -47,11 +47,9 @@ func SendMessage(b *WebhookReqBody, Text string) {
 	}
 
 	Send("sendMessage", reqBody)
-
 }
 
 func Send(SendMethod string, reqBody *sendMessageReqBody) {
-
 	reqBytes, err := json.Marshal(reqBody)
 	if err != nil {
 		log.Fatalln(err)

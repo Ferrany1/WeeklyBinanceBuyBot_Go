@@ -7,12 +7,10 @@ import (
 )
 
 func main() {
-
 	switch OS := os.Getenv("OS"); {
 	case OS == "Lambda":
 		lambda.Start(LRequest.HandleRequest)
 	default:
 		LRequest.HandleNonApiRequest()
 	}
-
 }

@@ -15,7 +15,6 @@ import (
 var SSID = Dirs.ReadFile("/Config.json").SpereedSheet.ID
 
 func CallSheet() *spreadsheet.Sheet {
-
 	data, _ := ioutil.ReadFile(Dirs.GetFile("/client_secret.json"))
 
 	conf, _ := google.JWTConfigFromJSON(data, spreadsheet.Scope)
@@ -31,7 +30,6 @@ func CallSheet() *spreadsheet.Sheet {
 }
 
 func LastCellReturn() (int, int, int) {
-
 	sheet := CallSheet()
 
 	lastRow, lastColumn := len(sheet.Rows), len(sheet.Columns)
@@ -41,7 +39,6 @@ func LastCellReturn() (int, int, int) {
 }
 
 func EditingSheet(lastOrder []string) {
-
 	sheet := CallSheet()
 
 	lr, lc, li := LastCellReturn()
@@ -65,7 +62,6 @@ func EditingSheet(lastOrder []string) {
 
 	err := sheet.Synchronize()
 	Utils.Println(err)
-
 }
 
 func GetAveragePriceHistory() (float64, float64, float64) {
