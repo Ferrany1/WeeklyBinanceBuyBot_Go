@@ -11,6 +11,7 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"log"
 	"strings"
+	"time"
 )
 
 var (
@@ -36,6 +37,7 @@ func HandleRequest(event events.APIGatewayProxyRequest) (response events.APIGate
 func HandleNonApiRequest() {
 	switch err := Binance.MarketOrder(Binance.GetUsdtBalanceToTrade()); {
 	case err == nil:
+		time.Sleep(10 * time.Second)
 		Spreedsheet.EditingSheet(Binance.GetLastTrade())
 		log.Println("Order was placed and recorded")
 	default:

@@ -19,6 +19,7 @@ var (
 	Config = Dirs.ReadFile("/Config.json")
 	Key    = Config.Binance.Key
 	Secret = Config.Binance.Secret
+	client = binance.NewClient(Key, Secret)
 )
 
 type CurrentPrice struct {
@@ -26,14 +27,7 @@ type CurrentPrice struct {
 	Price  string `json:"price"`
 }
 
-func binanceClient() *binance.Client {
-	client := binance.NewClient(Key, Secret)
-
-	return client
-}
-
 func GetUsdtBalanceToTrade() float64 {
-	client := binanceClient()
 
 	res, err := client.NewGetAccountService().Do(context.Background())
 	Utils.Println(err)
@@ -69,7 +63,6 @@ func GetUsdtBalanceToTrade() float64 {
 }
 
 func GetLastTrade() []string {
-	client := binanceClient()
 
 	orders, err := client.NewListOrdersService().Symbol("ETHUSDT").
 		Do(context.Background())
@@ -130,8 +123,6 @@ func GetLastTrade() []string {
 
 func MarketOrder(amountToTrade float64) error {
 	amountToTradeI := fmt.Sprintf("%f", amountToTrade)
-
-	client := binanceClient()
 
 	_, err := client.NewCreateOrderService().Symbol("ETHUSDT").
 		Side(binance.SideTypeBuy).Type(binance.OrderTypeMarket).QuoteOrderQty(amountToTradeI).Do(context.Background())
